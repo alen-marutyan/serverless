@@ -4,7 +4,7 @@ const cognito = new AWS.CognitoIdentityServiceProvider()
 
 module.exports.handler = async (event) => {
     try {
-        const { email, password } = JSON.parse(event.body)
+        const {email, password } = JSON.parse(event.body)
         const { user_pool_id } = process.env
 
         if (!validateUser(email,password)){
@@ -18,12 +18,15 @@ module.exports.handler = async (event) => {
                 {
                     Name: 'email',
                     Value: email
+                },
+                {
+                    Name: 'email_verified',
+                    Value: 'true'
                 }],
             MessageAction: 'SUPPRESS'
         }
         const response = await cognito.adminCreateUser(params).promise();
 
-        console.log('response', response)
 
         if (response.User) {
             const paramsForSetPass = {
