@@ -5,12 +5,12 @@ const {sendResponse} = require("../../util/function");
 
 module.exports.handler = async (event) => {
     try {
-        let data = await docClient.get({
+        let data = await docClient.query({
             TableName: 'car-table-dev',
-            Key:{
-                userId: event.requestContext.authorizer.claims.sub,
-                license_plate: event.pathParameters.id
-            }
+            KeyConditionExpression: "license_plate = :gsi1",
+            ExpressionAttributeValues: {
+                ":gsi1": event.pathParameters.id,
+            },
         }).promise();
 
         return sendResponse(200,{data});
@@ -19,3 +19,4 @@ module.exports.handler = async (event) => {
         if (err) return sendResponse(err.statusCode, err);
     }
 }
+

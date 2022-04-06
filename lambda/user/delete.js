@@ -19,7 +19,6 @@ module.exports.handler = async (event) => {
              docClient.delete({
                 TableName: 'car-table-dev',
                 Key: {
-                    userId: event.requestContext.authorizer.claims.sub,
                     license_plate: el.license_plate
                 }
             }).promise();

@@ -11,11 +11,20 @@ module.exports.handler = async (event) => {
             return sendResponse(500, 'Error Validate' );
         }
 
+
+        // let result = await docClient.query({
+        //     TableName: 'car-table-dev',
+        //     IndexName: "plate",
+        //     KeyConditionExpression: "license_plate = :gsi1",
+        //     ExpressionAttributeValues: {
+        //         ":gsi1": event.pathParameters.id,
+        //     },
+        // }).promise();
+
         const params = {
             TableName: "car-table-dev",
             Key: {
-                userId: event.requestContext.authorizer.claims.sub,
-                license_plate: event.pathParameters.id
+                license_plate: event.pathParameters.id,
             },
             UpdateExpression: "set brand = :b, model = :m",
             ExpressionAttributeValues: {

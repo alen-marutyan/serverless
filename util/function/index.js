@@ -26,6 +26,20 @@ const validateCar = (license_plate,model,brand) => {
 }
 
 
+const queryDb = async (docClient) =>{
+    let result = await docClient.query({
+        TableName: 'car-table-dev',
+        IndexName: "plate",
+        KeyConditionExpression: "license_plate = :gsi1",
+        ExpressionAttributeValues: {
+            ":gsi1": event.pathParameters.id,
+        },
+    }).promise();
+
+    console.log(result)
+    return result.Items[0];
+}
+
 module.exports = {
-    sendResponse, validateUser, validateCar
+    sendResponse, validateUser, validateCar,queryDb
 };

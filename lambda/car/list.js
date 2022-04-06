@@ -7,6 +7,7 @@ module.exports.handler = async (event) => {
     try {
         let data = await docClient.query({
             TableName: 'car-table-dev',
+            IndexName: "plate",
             KeyConditionExpression: "userId = :userId",
             ExpressionAttributeValues: {
                 ":userId": event.requestContext.authorizer.claims.sub,

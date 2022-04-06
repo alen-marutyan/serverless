@@ -14,9 +14,9 @@ module.exports.handler = async (event)=>{
 
         let params = {
             TableName: table,
-            ConditionExpression: `attribute_not_exists(license_plate)`,
+            ConditionExpression: "attribute_not_exists(license_plate)",
             Item: {
-                license_plate,
+                license_plate: license_plate.toLowerCase(),
                 carId: uuid.v4(),
                 model: {
                     modelId: uuid.v4(),
