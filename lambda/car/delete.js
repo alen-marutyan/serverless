@@ -1,24 +1,28 @@
 const AWS = require('aws-sdk');
 const {sendResponse, queryDb} = require("../../util/function");
+const {promise} = require("zod");
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = async (event) => {
     try {
+        let data = await docClient.get({
+            TableName: 'car-table-dev',
+            Key: {
+                carId: event.pathParameters.id,
+            }
+        }).promise();
 
-        // let result = await docClient.query({
-        //     TableName: 'car-table-dev',
-        //     IndexName: "plate",
-        //     KeyConditionExpression: "license_plate = :gsi1",
-        //     ExpressionAttributeValues: {
-        //         ":gsi1": event.pathParameters.id,
-        //     },
-        // }).promise();
-        //
+        await docClient.delete({
+            TableName: 'car-table-dev',
+            Key: {
+                carId: `license_plate#${data.Item.license_plate}`
+            }
+        }).promise();
 
         await docClient.delete({
             TableName: "car-table-dev",
             Key: {
-                license_plate: event.pathParameters.id,
+                carId: event.pathParameters.id,
             },
         }).promise();
 

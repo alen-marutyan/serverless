@@ -12,22 +12,35 @@ module.exports.handler = async (event) => {
         }
 
 
-        // let result = await docClient.query({
-        //     TableName: 'car-table-dev',
-        //     IndexName: "plate",
-        //     KeyConditionExpression: "license_plate = :gsi1",
-        //     ExpressionAttributeValues: {
-        //         ":gsi1": event.pathParameters.id,
-        //     },
-        // }).promise();
+        let data = await docClient.get({
+            TableName: 'car-table-dev',
+            Key: {
+                carId: event.pathParameters.id,
+            }
+        }).promise();
+
+        await docClient.delete({
+            TableName: 'car-table-dev',
+            Key: {
+                carId: `license_plate#${data.Item.license_plate}`
+            }
+        }).promise();
+
+        await docClient.put({
+            TableName: 'car-table-dev',
+            Item: {
+                carId: `license_plate#${license_plate}`,
+            }
+        }).promise();
 
         const params = {
             TableName: "car-table-dev",
             Key: {
-                license_plate: event.pathParameters.id,
+                carId: event.pathParameters.id,
             },
-            UpdateExpression: "set brand = :b, model = :m",
+            UpdateExpression: "set license_plate = :l, brand = :b, model = :m",
             ExpressionAttributeValues: {
+                ":l": license_plate,
                 ":m": {
                     brandId: uuid.v4(),
                     name: model
@@ -40,8 +53,8 @@ module.exports.handler = async (event) => {
             ReturnValues: "ALL_NEW",
         };
 
-        let data = await docClient.update(params).promise();
-        return sendResponse(200,{data});
+        let result = await docClient.update(params).promise();
+        return sendResponse(200,{result});
     }catch (error) {
         const message = error.message ? error.message : 'Internal server error'
         return sendResponse(500, { message })    }
