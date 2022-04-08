@@ -5,12 +5,11 @@ const {sendResponse} = require("../../util/function");
 
 module.exports.handler = async (event) => {
     try {
-        let data = await docClient.query({
+        let data = await docClient.get({
             TableName: 'car-table-dev',
-            KeyConditionExpression: "license_plate = :gsi1",
-            ExpressionAttributeValues: {
-                ":gsi1": event.pathParameters.id,
-            },
+            Key: {
+                carId: event.pathParameters.id,
+            }
         }).promise();
 
         return sendResponse(200,{data});
